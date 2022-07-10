@@ -32,6 +32,8 @@ function BattleModule.Battle(Matchup)
 			local AnimalNPC = ModifyModule.CreateAnimal(false, Matchup["Player2"])
 			local Player2Animals = {AnimalNPC}
 			Player2Animals[1].Parent = ReplicatedStorage.NPCAnimals
+			
+			--create NPC with stats
 
 			local function FindAnimals()
 				Player1Animals = { }
@@ -47,6 +49,8 @@ function BattleModule.Battle(Matchup)
 					Player2Animals = {AnimalNPC}
 				end
 			end
+			
+			--finds animals alive for player used for battle and check if NPC animal is still alive
 
 			FindAnimals()
 
@@ -56,6 +60,8 @@ function BattleModule.Battle(Matchup)
 				local PlayerAnimal2NewHealth = Player2Animals[1].Health.Value - Player1Animals[1].Damage.Value
 				Player1Animals[1].Health.Value = PlayerAnimal1NewHealth
 				Player2Animals[1].Health.Value = PlayerAnimal2NewHealth
+				
+				--battle and update client with new info
 
 				FindAnimals()
 				BattleRemotes.Battle:FireClient(Matchup["Player1"], Player2Animals)
@@ -72,6 +78,8 @@ function BattleModule.Battle(Matchup)
 				elseif not (#Player2Animals > 0) then
 					Matchup["Player1"].GameAttributes.Gems.Value += 1
 				end
+				
+				--find winner of battle and give rewards
 
 				Matchup["Player1"].GameAttributes.Turn.Value += 1
 				Matchup["Player1"].GameAttributes.Gold.Value = 10 + (2 * Matchup["Player1"].GameAttributes.Turn.Value)
@@ -80,6 +88,7 @@ function BattleModule.Battle(Matchup)
 			end
 		end)
 	else
+		--normal player battle (1v1)
 		spawn(function()
 			BattleRemotes.StartBattle:FireClient(Matchup["Player1"], true)
 			BattleRemotes.StartBattle:FireClient(Matchup["Player2"], true)
@@ -104,6 +113,8 @@ function BattleModule.Battle(Matchup)
 					end
 				end
 			end
+			
+			--finds animals alive for players used for battle
 
 			FindAnimals()
 
@@ -114,6 +125,9 @@ function BattleModule.Battle(Matchup)
 				local PlayerAnimal2NewHealth = Player2Animals[1].Health.Value - Player1Animals[1].Damage.Value
 				Player1Animals[1].Health.Value = PlayerAnimal1NewHealth
 				Player2Animals[1].Health.Value = PlayerAnimal2NewHealth
+				
+				--battle and update client with new info
+
 
 				FindAnimals()
 				BattleRemotes.Battle:FireClient(Matchup["Player1"], Player2Animals)
@@ -132,6 +146,8 @@ function BattleModule.Battle(Matchup)
 				elseif not (#Player2Animals > 0) then
 					Matchup["Player2"].GameAttributes.Lives.Value -= 1
 				end
+				
+				--find winner of battle and give rewards and reset for next battle
 
 				Matchup["Player1"].GameAttributes.Turn.Value += 1
 				Matchup["Player1"].GameAttributes.Gold.Value = 10 + (2 * Matchup["Player1"].GameAttributes.Turn.Value)

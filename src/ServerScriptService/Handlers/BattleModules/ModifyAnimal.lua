@@ -14,16 +14,18 @@ function ModifyModule.UpgradeAnimal(Player, Animal)
 	local Damage = Animal:FindFirstChild("Damage")
 	local LevelUpEffect = Animal:FindFirstChild("LevelUpEffect")
 
-	if not (Level.Value >= MaxLevel.Value) then
-		if XP.Value < MaxXP.Value then
+	if Level and MaxLevel and not (Level.Value >= MaxLevel.Value) then
+		if XP and MaxXP and Damage and Health and XP.Value < MaxXP.Value then
 			XP.Value += 1
 			Health.Value += 1
 			Damage.Value += 1
+			--upgrade animal with XP and slight stats buff
 
 			if XP.Value >= MaxXP.Value then
 				XP.Value = 0
 				MaxXP.Value += 1
 				Level.Value += 1
+				--upgrade animals level, resetting XP to zero and giving it stronger special effects
 
 				if LevelUpEffect then
 					if LevelUpEffect == "UpgradeFriends" then
@@ -31,6 +33,7 @@ function ModifyModule.UpgradeAnimal(Player, Animal)
 							if v ~= Animal then
 								v.Health.Value += 1
 								v.Damage.Value += 1
+								--certain animals have upgrade effects which can for example upgrade other friendly pets alive
 							end
 						end
 					end
@@ -59,28 +62,23 @@ function ModifyModule.CreateAnimal(Player, Animal: string)
 			if Player.GameAttributes.Gold.Value >= AnimalModule.Cost then
 				Player.GameAttributes.Gold.Value -= AnimalModule.Cost
 				for i,v in AnimalModule do
-					if type(v) == "string" then
-						local StringValue = Instance.new("StringValue")
-						StringValue.Name = i
-						StringValue.Value = v
-						StringValue.Parent = AnimalInstance
-					elseif type(v) == "number" then
-						local NumberValue = Instance.new("NumberValue")
-						NumberValue.Name = i
-						NumberValue.Value = v
-						NumberValue.Parent = AnimalInstance
-						if i == "Health" then
-							NumberValue.Changed:Connect(function(NewValue)
-								if NewValue <= 0 then
-									for _,val in ipairs(Player.GameAttributes:GetChildren()) do
-										if val.Value == AnimalInstance then
-											val.Value = nil
-										end
+					--recreate stats for new animal
+					local Value = if type(v) == "string" then Instance.new("StringValue") else Instance.new("NumberValue")
+					Value.Name = i
+					Value.Value = v
+					Value.Parent = AnimalInstance
+					if i == "Health" then
+						Value.Changed:Connect(function(NewValue)
+							if NewValue <= 0 then
+								for _,val in ipairs(Player.GameAttributes:GetChildren()) do
+									if val.Value == AnimalInstance then
+										val.Value = nil
 									end
-									AnimalInstance:Destroy()
 								end
-							end)
-						end
+								--remove animal if its dead
+								AnimalInstance:Destroy()
+							end
+						end)
 					end
 				end
 
@@ -92,25 +90,18 @@ function ModifyModule.CreateAnimal(Player, Animal: string)
 		else
 			--creating npc
 			for i,v in AnimalModule do
-				if type(v) == "string" then
-					local StringValue = Instance.new("StringValue")
-					StringValue.Name = i
-					StringValue.Value = v
-					StringValue.Parent = AnimalInstance
-				elseif type(v) == "number" then
-					local NumberValue = Instance.new("NumberValue")
-					NumberValue.Name = i
-					NumberValue.Value = v
-					NumberValue.Parent = AnimalInstance
-					if i == "Health" then
-						NumberValue.Value *= 5
-						--buff up the exotic animals to capture them
-						NumberValue.Changed:Connect(function(NewValue)
-							if NewValue <= 0 then
-								AnimalInstance:Destroy()
-							end
-						end)
-					end
+				local Value = if type(v) == "string" then Instance.new("StringValue") else Instance.new("NumberValue")
+				Value.Name = i
+				Value.Value = v
+				Value.Parent = AnimalInstance
+				if i == "Health" then
+					Value.Value *= 5
+					--buff up the exotic animals to capture them
+					Value.Changed:Connect(function(NewValue)
+						if NewValue <= 0 then
+							AnimalInstance:Destroy()
+						end
+					end)
 				end
 			end
 		end

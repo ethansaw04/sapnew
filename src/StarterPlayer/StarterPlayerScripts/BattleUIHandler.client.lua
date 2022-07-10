@@ -22,6 +22,7 @@ for i, v in ipairs(ShopRoster:GetChildren()) do
 	if v:IsA("ImageButton") then
 		v.MouseButton1Click:Connect(function()
 			if not Ready then
+				--selection of items in shop
 				v.BorderColor3 = Color3.fromRGB(255, 255, 0)
 				CurrentlySelected = v
 				
@@ -48,6 +49,8 @@ for i, v in ipairs(CurrentRoster:GetChildren()) do
 						end
 					end
 					
+					--buy items in shop
+					
 					local Purchase = BattleRemotes.Purchase:InvokeServer(CurrentlySelected.NameValue.Value, tonumber(string.sub(v.Name, string.len(v.Name), string.len(v.Name))), CurrentlySelected)
 					
 					if Purchase then
@@ -56,24 +59,27 @@ for i, v in ipairs(CurrentRoster:GetChildren()) do
 						CurrentlySelected = nil
 					end
 				elseif Player.GameAttributes["Animal" .. RosterPosition].Value and Player.GameAttributes["Animal" .. RosterPosition].Value.Name == CurrentlySelected.NameValue.Value then
+					--upgrade current animals by buying
+					
 					local XP = Player.GameAttributes["Animal" .. RosterPosition].Value:FindFirstChild("XP")
 					local MaxXP = Player.GameAttributes["Animal" .. RosterPosition].Value:FindFirstChild("MaxXP")
 					local Level = Player.GameAttributes["Animal" .. RosterPosition].Value:FindFirstChild("Level")
 					local MaxLevel = Player.GameAttributes["Animal" .. RosterPosition].Value:FindFirstChild("MaxLevel")
-					
-					if Level.Value < MaxLevel.Value then
-						for _, val in ipairs(ShopRoster:GetChildren()) do
-							if val:IsA("ImageButton") then
-								val.BorderColor3 = Color3.fromRGB(0, 0, 0)
+					if XP and MaxXP and Level and MaxLevel then
+						if Level.Value < MaxLevel.Value then
+							for _, val in ipairs(ShopRoster:GetChildren()) do
+								if val:IsA("ImageButton") then
+									val.BorderColor3 = Color3.fromRGB(0, 0, 0)
+								end
 							end
-						end
 
-						local Purchase = BattleRemotes.Purchase:InvokeServer(CurrentlySelected.NameValue.Value, tonumber(string.sub(v.Name, string.len(v.Name), string.len(v.Name))), CurrentlySelected)
-						
-						if Purchase then
-							CurrentlySelected.Visible = false
-							CurrentlySelected.NameValue.Value = ""
-							CurrentlySelected = nil
+							local Purchase = BattleRemotes.Purchase:InvokeServer(CurrentlySelected.NameValue.Value, tonumber(string.sub(v.Name, string.len(v.Name), string.len(v.Name))), CurrentlySelected)
+							
+							if Purchase then
+								CurrentlySelected.Visible = false
+								CurrentlySelected.NameValue.Value = ""
+								CurrentlySelected = nil
+							end
 						end
 					end
 				end
@@ -86,6 +92,8 @@ for i, v in ipairs(Player.GameAttributes:GetChildren()) do
 	if string.sub(v.Name, 1, 6) == "Animal" then
 		local Location = tonumber(string.sub(v.Name, 7, 7))
 		v.Changed:Connect(function(NewValue)
+			--update animal UI whenever player animals are changed
+			
 			local RosterIcon = CurrentRoster:FindFirstChild("Animal" .. tostring(Location))
 			
 			if RosterIcon then

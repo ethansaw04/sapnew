@@ -13,7 +13,7 @@ function BattleModule.ChooseRandomAnimals()
 		
 		local AnimalsList = #Animals:GetChildren() > 0 and Animals:GetChildren() or nil
 		if AnimalsList then
-			local RandomAnimal = AnimalsList[math.random(1, #Animals)]
+			local RandomAnimal = AnimalsList[math.random(1, #AnimalsList)]
 			table.insert(NewShopRoster, RandomAnimal.Name)
 		end
 	end

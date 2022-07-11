@@ -41,7 +41,7 @@ function BattleService.HandleSellEvent(Player, Animal)
 			elseif Animal.SellEffect.Value == "RandomUpgrade" then
 				local AnimalsList = #Player.Animals:GetChildren() > 0 and Player.Animals:GetChildren() or nil
 				if AnimalsList then
-					local RandomAnimal = AnimalsList[math.random(1, #Animals)]
+					local RandomAnimal = AnimalsList[math.random(1, #AnimalsList)]
 					RandomAnimal.Health.Value += Animal.Level.Value
 					RandomAnimal.Damage.Value += Animal.Level.Value
 				end

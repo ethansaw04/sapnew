@@ -9,11 +9,12 @@ function BattleModule.ChooseRandomAnimals()
 	--returns animals to be put into a player's shop in the next round
 	local NewShopRoster = { }
 	for i = 1, 3 do
-		local RandomNumber = math.random(1, #Animals:GetChildren())
-		for index, animal in ipairs(Animals:GetChildren()) do
-			if index == RandomNumber then
-				table.insert(NewShopRoster, animal.Name)
-			end
+		--3 shop places so repeat for a fixed number of times .. in this case 3
+		
+		local AnimalsList = #Animals:GetChildren() > 0 and Animals:GetChildren() or nil
+		if AnimalsList then
+			local RandomAnimal = AnimalsList[math.random(1, #Animals)]
+			table.insert(NewShopRoster, RandomAnimal.Name)
 		end
 	end
 	return NewShopRoster
